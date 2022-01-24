@@ -69,10 +69,7 @@ class AudioFeatureExtractor():
         for resolution in self.resolution_range:
             features.append(self.extract_feature_from_utterance(utterance,resolution))
 
-            ## single resolution, single channel
-            if len(self.resolution_range) == 1:
-                return np.stack(features, axis = -1)
-
+        
         ## multiple resolution, pad each and stack them
         largest = max(feature.shape[1] for feature in features)
         new_features = []

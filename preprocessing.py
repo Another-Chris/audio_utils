@@ -1,9 +1,10 @@
 from scipy.io import wavfile
-from .feature import AudioFeatureExtractor
-from .utils import fix_sample_length
+from feature import AudioFeatureExtractor
+from utils import standard_norm
 import os
 import random
 import numpy as np
+
 
 
 def create_fdirs(directory):
@@ -13,8 +14,11 @@ def create_fdirs(directory):
         fnames_for_currlabel = os.listdir(directory + "/" + label)
         for fname in fnames_for_currlabel:
             fdirs.append((directory + "/" + label + "/" + fname, label))
-    random.shuffle(fdirs)
+    # random.shuffle(fdirs)
     return [el[0] for el in fdirs], [el[1] for el in fdirs]
+
+
+
 
 class AudioFeatureGenerator(AudioFeatureExtractor):
     def __init__(
@@ -39,6 +43,10 @@ class AudioFeatureGenerator(AudioFeatureExtractor):
         self.delta = delta
         self.log = log
 
+        self.fdirs = None
+        self.labels = None
+        self.randi = None
+
 
 
     def flow_from_directory(
@@ -47,19 +55,21 @@ class AudioFeatureGenerator(AudioFeatureExtractor):
         utterance_length = 3,
         batch_size = 32
         ):
+        if self.fdirs is None:
+            self.fdirs, self.labels = create_fdirs(directory)
 
-        fdirs, labels = create_fdirs(directory)
-
-        self.sr = wavfile.read(fdirs[0])[0]
+        self.sr = wavfile.read(self.fdirs[0])[0]
         sample_per_utterance = utterance_length * self.sr
+
         while True:
-            for i in range(len(fdirs) - batch_size):
+            for i in range(len(self.fdirs) - batch_size):
                 features = []
-                batch = fdirs[i:i+batch_size]
-                batch_labels = labels[i:i+batch_size]
+                batch = self.fdirs[i:i+batch_size]
+                batch_labels = self.labels[i:i+batch_size]
                 for sample in batch:
                     sample_data = wavfile.read(sample)[1]
-                    sample_fixed_len = fix_sample_length(sample_data,sample_per_utterance)
+
+                    ## extract features
                     feature = self.extract_feature_with_resolutions(sample_fixed_len)
                     features.append(feature)
-                yield np.stack(features, axis = 0), np.stack(batch_labels, axis = 0)
+                yield np.stack(features, axis = 0), np.stack(batch_labels, axis = 0).astype(int)
