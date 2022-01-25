@@ -1,7 +1,6 @@
 import numpy as np
 import os
 
-with open("test.npz", "wb") as fhandle: np.savez_compressed(fhandle, np.array([1,2,3]))
 
 
 
