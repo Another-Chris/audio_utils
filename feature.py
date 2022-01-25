@@ -1,6 +1,5 @@
 import librosa
 import numpy as np
-from sklearn.preprocessing import MinMaxScaler
 
 """
 This is where you extract the audio features and consider the way of creating generators.
@@ -69,7 +68,7 @@ class AudioFeatureExtractor():
         for resolution in self.resolution_range:
             features.append(self.extract_feature_from_utterance(utterance,resolution))
 
-        
+
         ## multiple resolution, pad each and stack them
         largest = max(feature.shape[1] for feature in features)
         new_features = []
