@@ -9,6 +9,18 @@ def standard_norm(vec):
     std = vec.std()
     return (vec - mean) / std
 
+
+def fix_sample_length(sample, sample_per_utterance):
+    sample_len = len(sample)
+    if sample_len  > sample_per_utterance:
+        sample_seg = sample[0:sample_per_utterance]
+    else:
+        pad_width = sample_per_utterance - sample_len
+        sample_seg = np.pad(sample,(0,pad_width),"constant")
+    return standard_norm(sample_seg)
+
+
+    
 def create_fdirs(directory):
     total_labels = os.listdir(directory)
     fdirs = []
@@ -20,14 +32,6 @@ def create_fdirs(directory):
     return [el[0] for el in fdirs], [el[1] for el in fdirs]
 
 
-def fix_sample_length(sample, sample_per_utterance):
-    sample_len = len(sample)
-    if sample_len  > sample_per_utterance:
-        sample_seg = sample[0:sample_per_utterance]
-    else:
-        pad_width = sample_per_utterance - sample_len
-        sample_seg = np.pad(sample,(0,pad_width),"constant")
-    return standard_norm(sample_seg)
 
 class AudioFeatureExtractor():
     def __init__(

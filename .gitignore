@@ -1,2 +1,3 @@
 kaggle_audio_tagging
 data
+*.npz
