@@ -7,6 +7,8 @@ from scipy.io import wavfile
 from utils import standard_norm, fix_sample_length
 
 
+
+
 class FeatureExtractor:
     def __init__(
         self,
@@ -50,7 +52,7 @@ class FeatureExtractor:
                 utterance,
                 sr = self.sr,
                 n_fft = int(self.window_size * resolution),
-                n_mfcc = self.num_mels,
+                n_mfcc = self.num_mfccs,
                 hop_length = int(self.hop_length * resolution),
             )
 
@@ -70,8 +72,7 @@ class FeatureExtractor:
         if self.log:
             feature = librosa.power_to_db(feature)
 
-        # feature = (feature - feature.min()) / (feature.max() - feature.min())
-        feature = standard_norm(feature)
+        feature = standard_norm(feature, axis = 0)
         return feature
 
     def extract_feature_with_resolutions(self, utterance):
@@ -92,7 +93,7 @@ class FeatureExtractor:
 
 
 class AudioFeatureStorer(FeatureExtractor):
-    def __init__(self, fix_length, **kwargs):
+    def __init__(self, fix_length = 3, **kwargs):
         super().__init__(**kwargs)
 
         self.fix_length = fix_length
@@ -102,8 +103,8 @@ class AudioFeatureStorer(FeatureExtractor):
         if self.sr is None:
             self.load_sr(sr)
 
-        if self.fix_length:
-            utterance = fix_sample_length(utterance, self.sr * 3)
+        if self.fix_length > 0:
+            utterance = fix_sample_length(utterance, self.sr * self.fix_length)
         utterance = standard_norm(utterance)
         return self.extract_feature_with_resolutions(utterance)
 
@@ -123,7 +124,7 @@ class AudioFeatureStorer(FeatureExtractor):
 
         if labels is None:
             labels = np.zeros(len(fdirs))
-            
+
         if labels.dtype != "int":
             labels = labels.astype("int")
 

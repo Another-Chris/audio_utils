@@ -9,15 +9,19 @@ import os
 
 
 
-def standard_norm(vec):
-    mean = vec.mean()
-    std = vec.std()
-    return (vec - mean) / std
+
+
+## when wil the std become zero? constant. either nothing, or complete noise.
+def standard_norm(vec, axis = None):
+    mean = vec.mean(axis = axis, keepdims=True)
+    std = vec.std(axis = axis, keepdims=True)
+    return (vec - mean) / (std + 1e-7)
 
 def fix_sample_length(sample, sample_per_utterance):
     sample_len = len(sample)
     if sample_len  > sample_per_utterance:
-        sample_seg = sample[0:0+sample_per_utterance]
+        randi = np.random.randint(0, sample_len - sample_per_utterance)
+        sample_seg = sample[randi:randi+sample_per_utterance]
     else:
         pad_width = sample_per_utterance - sample_len
         sample_seg = np.pad(sample,(0,pad_width),"constant")
