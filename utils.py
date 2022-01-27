@@ -8,9 +8,6 @@ import numpy as np
 import os
 
 
-
-
-
 ## when wil the std become zero? constant. either nothing, or complete noise.
 def standard_norm(vec, axis = None):
     mean = vec.mean(axis = axis, keepdims=True)

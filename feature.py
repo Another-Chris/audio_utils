@@ -4,7 +4,7 @@ import os
 import librosa
 from scipy.io import wavfile
 
-from utils import standard_norm, fix_sample_length
+from .utils import standard_norm, fix_sample_length
 
 
 
