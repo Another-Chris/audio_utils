@@ -103,22 +103,15 @@ class FeatureExtractor:
         self,
         utterance,
         feature_type,
+        resolution_range = [1],
         num_mels,
         num_mfccs,
-        resolution_range = [1],
         ):
         features = []
 
         for resolution in resolution_range:
             features.append(
-            self.extract_feature_from_utterance(
-                    utterance,
-                    resolution,
-                    feature_type,
-                    num_mels,
-                    num_mfccs,
-                    resolution_range
-            )
+            self.extract_feature_from_utterance(utterance,resolution,feature_type)
             )
 
         ## multiple resolution, pad each and stack them
